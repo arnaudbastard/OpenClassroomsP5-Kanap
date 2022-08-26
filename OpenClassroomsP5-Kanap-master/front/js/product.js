@@ -32,6 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    /*----------- Fonction d'affichage du produit et ses détails -----------*/
+
     function displayProduct(product) {
         console.log(product)
         // Récupération des parents

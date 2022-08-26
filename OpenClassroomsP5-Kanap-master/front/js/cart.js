@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <div class="cart__item__content__description">
                             <h2>${Product.name}</h2>
                             <p>${Product.color}</p>
-                            <p>${Product.price}</p>
+                            <p>${Product.price}€</p>
                         </div>
                         <div class="cart__item__content__settings">
                             <div class="cart__item__content__settings__quantity">
@@ -160,18 +160,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 let newInputQty = inputevent.target.value;
 
+                // On remonte depuis l'élément input modifié vers le parent et on redscend au h2
+                const Name = input
+                    .closest("div.cart__item__content")
+                    .querySelector("div.cart__item__content__description > h2").innerText;
+
+                const color = input
+                    .closest("div.cart__item__content")
+                    .querySelector("div.cart__item__content__description > p").innerText;
+
+                const productKey = Name + " " + color;
+
                 if (newInputQty >= 1 && newInputQty <= 100) {
-
-                    // On remonte depuis l'élément input modifié vers le parent et on redscend au h2
-                    const Name = input
-                        .closest("div.cart__item__content")
-                        .querySelector("div.cart__item__content__description > h2").innerText;
-
-                    const color = input
-                        .closest("div.cart__item__content")
-                        .querySelector("div.cart__item__content__description > p").innerText;
-
-                    const productKey = Name + " " + color;
 
                     let productlocal = JSON.parse(localStorage.getItem(productKey));
                     productlocal.qty = newInputQty;
@@ -184,8 +184,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     displayPrice(AllProducts);
 
-                } else {
-                    alert("Choisis une bonne quantité.")
+                } else if (newInputQty <= 1) {
+
+                    let productlocal = JSON.parse(localStorage.getItem(productKey));
+
+                    localStorage.removeItem(productKey);
+
+                    input.closest("article.cart__item").remove();
+
+                    const result = AllProducts.find(Product => Product.name === productlocal.name && Product.color === productlocal.color);
+
+                    AllProducts = AllProducts.filter(Product => Product !== result);
+
+                    listenQuantity(AllProducts);
+                    displayPrice(AllProducts);
+
                 }
             })
         })
@@ -298,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (localStorage.length !== 0) {
 
                 if (validationForm(form)) {
-                    console.log('Je suis là');
+
 
                     // On crée un objet avec les valeurs du formulaire
                     let formInfo = {
